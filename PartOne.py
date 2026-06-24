@@ -22,6 +22,14 @@ def fk_level(text, d):
         text (str): The text to analyze.
         d (dict): A dictionary of syllables per word.
 
+    words = 0.0
+    syllables = 0.0
+    sentences = 0.0
+
+    restult = round(((words/sentences)*0.39)+((syllables/words)*11.8) - 15.59), 2)
+
+    return result
+
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
@@ -36,10 +44,24 @@ def count_syl(word, d):
         word (str): The word to count syllables for.
         d (dict): A dictionary of syllables per word.
 
+    
+
     Returns:
         int: The number of syllables in the word.
     """
     pass
+
+def count_words(text):
+    #print(text)
+    tokens = nltk.word_tokenize(text.lower())
+    alphanumTokens=[]
+    for token in tokens:
+        if token.isalnum():
+            alphanumTokens.append(token)
+    
+    return len(alphanumTokens)
+
+
 
 
 def read_novels(path=Path.cwd() / "texts" / "novels"):
@@ -79,7 +101,19 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
 
 def nltk_ttr(text):
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize."""
-    pass
+    #print(text)
+    tokens = nltk.word_tokenize(text.lower())
+    alphanumTokens=[]
+    for token in tokens:
+        if token.isalnum():
+            alphanumTokens.append(token)
+    
+    types = set(alphanumTokens)
+    total_tokens = len(alphanumTokens)
+    total_types = len(types)
+    ttr = total_types / total_tokens
+    print(ttr)
+    return ttr
 
 
 def get_ttrs(df):
@@ -110,9 +144,10 @@ if __name__ == "__main__":
     path = Path.cwd() / "texts" / "novels"
     print(path)
     read_novels(path)
-    df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    df = read_novels(path)
     print(df.head())
     # nltk.download("cmudict")
+    # nltk.download("punkt")
     # parse(df)
     # print(df.head())
     # print(get_ttrs(df))
