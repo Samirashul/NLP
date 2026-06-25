@@ -6,6 +6,7 @@ import nltk
 import spacy
 import os
 import pandas
+import cmudict
 from pathlib import Path
 
 
@@ -22,18 +23,36 @@ def fk_level(text, d):
         text (str): The text to analyze.
         d (dict): A dictionary of syllables per word.
 
-    words = 0.0
-    syllables = 0.0
-    sentences = 0.0
-
-    restult = round(((words/sentences)*0.39)+((syllables/words)*11.8) - 15.59), 2)
-
-    return result
+    
 
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
-    pass
+
+    words = 0.0
+    syllables = 0.0
+    sentences = 0.0
+
+    tokens = nltk.word_tokenize(text.lower())
+
+    alphanumTokens=[]
+    for token in tokens:
+        if token.isalnum():
+            alphanumTokens.append(token)
+            syllables+=count_syl(token, d)
+
+    words = len(alphanumTokens)
+
+    
+    sentences=len(nltk.sent_tokenize(text))
+
+    result = round(((len(alphanumTokens)/sentences)*0.39)+((syllables/len(alphanumTokens))*11.8) - 15.59, 2)
+
+    print(sentences)
+    print(words)
+    print(syllables)
+    print(result)
+    return result
 
 
 def count_syl(word, d):
@@ -44,12 +63,17 @@ def count_syl(word, d):
         word (str): The word to count syllables for.
         d (dict): A dictionary of syllables per word.
 
-    
-
     Returns:
         int: The number of syllables in the word.
     """
-    pass
+
+    count = 0
+    syllables =  d.dict().get(word)    
+    if syllables:
+        for syl in syllables[0]:
+            if(syl[-1].isdigit()):
+                count+=1
+    return count
 
 def count_words(text):
     #print(text)
@@ -146,6 +170,7 @@ if __name__ == "__main__":
     read_novels(path)
     df = read_novels(path)
     print(df.head())
+    fk_level("This is a test sentence. Please calculate the fk level. Thank you, I appreciate it!", cmudict)
     # nltk.download("cmudict")
     # nltk.download("punkt")
     # parse(df)
